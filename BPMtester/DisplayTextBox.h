@@ -1,4 +1,4 @@
-#pragma once
+﻿#pragma once
 
 #include <SFML/Graphics.hpp>
 
@@ -12,7 +12,7 @@ public:
 	DisplayTextBox();
 	void start();
 	void update_press(const BPMcomp& BPM);
-	void update(const BPMcomp& BPM);
+	//void update(const BPMcomp& BPM);
 	void stop();
 protected:
 	static void setTextEach(sf::Text& t_text, unsigned int size = 50);
@@ -24,8 +24,8 @@ protected:
 	bool m_started;
 	sf::Text m_ini;
 	mutable sf::Text m_title;
-	mutable sf::Text m_realtimeBPM;
+	//mutable sf::Text m_realtimeBPM;
 	mutable sf::Text m_presstimeBPM;
-	sf::Vector2f m_titleOrigin, m_realtimeOrigin, m_pressimeOrigin;
-	sf::Vector2f m_titlePosition, m_realtimePosition, m_presstimePosition;
+	sf::Vector2f m_titleOrigin, /*m_realtimeOrigin,*/ m_pressimeOrigin;
+	sf::Vector2f m_titlePosition, /*m_realtimePosition,*/ m_presstimePosition;
 };

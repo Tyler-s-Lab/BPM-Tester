@@ -1,4 +1,4 @@
-
+﻿
 #include "DisplayTextBox.h"
 
 #include <stdio.h>
@@ -18,7 +18,8 @@ void Run() {
 		"BPM",
 		sf::Style::Default ^ sf::Style::Resize
 	);
-	window.setVerticalSyncEnabled(true);
+	//window.setVerticalSyncEnabled(true);
+	window.setFramerateLimit(500);
 	window.setKeyRepeatEnabled(false);
 
 	BPMcomp BPM;
@@ -58,7 +59,7 @@ void Run() {
 					break;
 				}
 			}
-			textbox.update(BPM);
+			//textbox.update(BPM);
 			window.clear(sf::Color::White);
 			window.draw(textbox);
 			window.display();
