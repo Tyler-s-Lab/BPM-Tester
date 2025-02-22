@@ -1,8 +1,9 @@
-#pragma once
+﻿#pragma once
 
 #include <SFML\System\Clock.hpp>
 
 #include <string>
+#include <vector>
 
 class BPMcomp final {
 public:
@@ -13,7 +14,8 @@ public:
 protected:
 	void update() const;
 protected:
-	size_t m_pressCount;
-	mutable float m_bpm;
+	//size_t m_pressCount;
+	std::vector<long long> m_times;
+	mutable double m_bpm;
 	sf::Clock m_timer;
 };
