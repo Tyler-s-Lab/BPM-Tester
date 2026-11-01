@@ -14,7 +14,7 @@ public:
 protected:
 	void update() const;
 protected:
-	//size_t m_pressCount;
+	// Microseconds; m_times[0] == 0 is the first real tap (not the start key).
 	std::vector<long long> m_times;
 	mutable double m_bpm;
 	sf::Clock m_timer;
