@@ -1,7 +1,7 @@
 ﻿
 #include "DisplayTextBox.h"
-
-#include <stdio.h>
+#include "TapTempoPLL.h"
+#include <format>
 
 #define ISOLATION_AWARE_ENABLED 1
 #include <Windows.h>
@@ -13,30 +13,31 @@ name='Microsoft.Windows.Common-Controls' version='6.0.0.0' \
 processorArchitecture='*' publicKeyToken='6595b64144ccf1df' language='*'\"")
 
 void Run() {
-	sf::RenderWindow window(
-		sf::VideoMode(GlobalBase::instance()->getWindowSize().x, GlobalBase::instance()->getWindowSize().y),
+	sf::RenderWindow window{
+		sf::VideoMode{ { GlobalBase::instance()->getWindowSize().x, GlobalBase::instance()->getWindowSize().y } },
 		"BPM",
 		sf::Style::Default ^ sf::Style::Resize
-	);
+	};
 	//window.setVerticalSyncEnabled(true);
-	window.setFramerateLimit(500);
+	//window.setFramerateLimit(500);
 	window.setKeyRepeatEnabled(false);
 
-	BPMcomp BPM;
+	sf::Clock clock;
+	TapTempoPLL pll;
 	DisplayTextBox textbox;
-	sf::Event evt;
 	unsigned char UI = 1;
 	while (UI) {
 		UI = 1;
+		pll.reset();
 		while (UI == 1) {
-			while (window.pollEvent(evt)) {
-				switch (evt.type) {
-				case sf::Event::Closed:
+			while (const std::optional event = window.pollEvent()) {
+				if (event->is<sf::Event::Closed>()) {
 					UI = 0;
-					break;
-				case sf::Event::KeyPressed:
+					continue;
+				}
+				if (event->is<sf::Event::KeyPressed>()) {
 					++UI;
-					break;
+					continue;
 				}
 			}
 			window.clear(sf::Color::White);
@@ -44,22 +45,23 @@ void Run() {
 			window.display();
 		}
 		textbox.start();
-		BPM.start();
+		clock.restart();
 		while (UI == 2) {
-			while (window.pollEvent(evt)) {
-				switch (evt.type) {
-				case sf::Event::Closed:
-					UI = 0;
-					break;
-				case sf::Event::KeyPressed:
-					if (evt.key.code == sf::Keyboard::Escape)
+			while (const std::optional event = window.pollEvent()) {
+				const auto timepoint = clock.getElapsedTime();
+				if (const auto pkey = event->getIf<sf::Event::KeyPressed>()) {
+					if (pkey->code == sf::Keyboard::Key::Escape)
 						UI = 3;
-					BPM.press();
-					textbox.update_press(BPM);
-					break;
+					pll.addTap(timepoint.asSeconds());
+					textbox.update_press(std::format("{:.3f}\n", pll.getBPMOr(0.0)));
+					continue;
+				}
+				if (event->is<sf::Event::Closed>()) {
+					UI = 0;
+					continue;
 				}
 			}
-			//textbox.update(BPM);
+
 			window.clear(sf::Color::White);
 			window.draw(textbox);
 			window.display();
@@ -74,7 +76,7 @@ startpoint:
 	try {
 		Run();
 	}
-	catch (int err) {
+	catch (int) {
 		int chos = MessageBoxW(
 			NULL,
 			L"Assets missing.",
